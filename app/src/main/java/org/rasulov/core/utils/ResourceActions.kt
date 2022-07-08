@@ -1,6 +1,5 @@
 package org.rasulov.core.utils
 
-typealias ResourceAction<T> = (T) -> Unit
 
 /**
  * Actions queue, where actions are executed only if resource exists. If it doesn't then

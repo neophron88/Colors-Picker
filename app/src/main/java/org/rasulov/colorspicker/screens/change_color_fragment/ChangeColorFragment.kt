@@ -24,19 +24,11 @@ import org.rasulov.core.screens.screenViewModel
  */
 class ChangeColorFragment : BaseFragment(), HasScreenTitle {
 
-    /**
-     * This screen has 1 argument: color ID to be displayed as selected.
-     */
     class Screen(
         val currentColorId: Long
     ) : BaseScreen
 
     override val viewModel by screenViewModel<ChangeColorViewModel>()
-
-    /**
-     * Example of dynamic screen title
-     */
-    override fun getScreenTitle(): String? = viewModel.screenTitle.value
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = FragmentChangeColorBinding.inflate(inflater, container, false)
@@ -58,6 +50,9 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
         return binding.root
     }
 
+    override fun getScreenTitle(): String? = viewModel.screenTitle.value
+
+
     private fun setupLayoutManager(binding: FragmentChangeColorBinding, adapter: ColorsAdapter) {
         // waiting for list width
         binding.colorsRecyclerView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
@@ -66,8 +61,6 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
                 val width = binding.colorsRecyclerView.width
                 val minItemWidth = resources.getDimensionPixelSize(R.dimen.item_width)
                 val columns = width / minItemWidth
-                Log.d("it0088", "onGlobalLayout: $width")
-                Log.d("it0088", "onGlobalLayout: $minItemWidth")
                 binding.colorsRecyclerView.adapter = adapter
                 binding.colorsRecyclerView.layoutManager = GridLayoutManager(requireContext(), columns)
             }

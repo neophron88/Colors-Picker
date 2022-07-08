@@ -1,6 +1,5 @@
-package org.rasulov.core.screens
+package org.rasulov.core
 
-import org.rasulov.colorspicker.ActivityScopeViewModel
 
 interface FragmentsHolder {
 

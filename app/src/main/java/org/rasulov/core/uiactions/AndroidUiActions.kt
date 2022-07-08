@@ -2,7 +2,6 @@ package org.rasulov.core.uiactions
 
 import android.content.Context
 import android.widget.Toast
-import org.rasulov.colorspicker.App
 
 class AndroidUiActions(
     private val context: Context

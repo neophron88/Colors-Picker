@@ -1,12 +1,7 @@
 package org.rasulov.core.screens
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import org.rasulov.core.utils.Event
 
-typealias LiveEvent<T> = LiveData<Event<T>>
-typealias MutableLiveEvent<T> = MutableLiveData<Event<T>>
 
 /**
  * Base class for all view-models.

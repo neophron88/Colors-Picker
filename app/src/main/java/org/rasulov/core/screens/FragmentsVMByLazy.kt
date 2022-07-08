@@ -1,43 +1,23 @@
 package org.rasulov.core.screens
 
-import android.util.Log
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import androidx.savedstate.SavedStateRegistryOwner
-import org.rasulov.colorspicker.ARG_SCREEN
-import org.rasulov.colorspicker.App
-import org.rasulov.colorspicker.ActivityScopeViewModel
-import org.rasulov.core.navigator.IntermediateNavigator
-import org.rasulov.core.uiactions.AndroidUiActions
+import org.rasulov.core.BaseApplication
+import org.rasulov.core.FragmentsHolder
+import org.rasulov.core.utils.ARG_SCREEN
 import java.lang.reflect.Constructor
 
 /**
  * Use this method for getting view-models from your fragments
  */
 inline fun <reified VM : ViewModel> BaseFragment.screenViewModel() = viewModels<VM> {
-    val application = requireActivity().application as App
+    val application = requireActivity().application as BaseApplication
     val screen = requireArguments().getSerializable(ARG_SCREEN) as BaseScreen
-
-    // using Providers API directly for getting MainViewModel instance
-    val provider = ViewModelProvider(requireActivity(), org.rasulov.core.utils.ViewModelFactory {
-        ActivityScopeViewModel(
-            AndroidUiActions(requireContext()),
-            IntermediateNavigator()
-        )
-    })
-    val mainViewModel = provider[ActivityScopeViewModel::class.java]
-
-    // forming the list of available dependencies:
-    // - singleton scope dependencies (repositories) -> from App class
-    // - activity VM scope dependencies -> from MainViewModel
-    // - screen VM scope dependencies -> screen args
-    val dependencies = listOf(screen, mainViewModel) + application.models
-
-    // creating factory
+    val mainViewModel = (requireActivity() as FragmentsHolder).getActivityScopeViewModel()
+    val dependencies = listOf(screen, mainViewModel) + application.repositories
     ViewModelFactory(dependencies, this)
 }
 

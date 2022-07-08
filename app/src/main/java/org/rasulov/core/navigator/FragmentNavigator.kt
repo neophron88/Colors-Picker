@@ -7,11 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import org.rasulov.colorspicker.ARG_SCREEN
 import org.rasulov.colorspicker.R
 import org.rasulov.core.screens.BaseFragment
 import org.rasulov.core.screens.BaseScreen
 import org.rasulov.core.screens.HasScreenTitle
+import org.rasulov.core.utils.ARG_SCREEN
 import org.rasulov.core.utils.Event
 
 class FragmentNavigator(
@@ -22,17 +22,6 @@ class FragmentNavigator(
 
     private var result: Event<Any>? = null
 
-
-    override fun launch(screen: BaseScreen) {
-        launchFragment(screen)
-    }
-
-    override fun goBack(result: Any?) {
-        if (result != null) {
-            this.result = Event(result)
-        }
-        activity.onBackPressed()
-    }
 
     fun onCreate(savedInstanceState: Bundle?) {
         if (savedInstanceState == null) {
@@ -53,6 +42,18 @@ class FragmentNavigator(
             .supportFragmentManager
             .unregisterFragmentLifecycleCallbacks(fragmentCallbacks)
 
+    }
+
+
+    override fun launch(screen: BaseScreen) {
+        launchFragment(screen)
+    }
+
+    override fun goBack(result: Any?) {
+        if (result != null) {
+            this.result = Event(result)
+        }
+        activity.onBackPressed()
     }
 
 
@@ -111,4 +112,6 @@ class FragmentNavigator(
         }
 
     }
+
+
 }

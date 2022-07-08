@@ -8,8 +8,8 @@ import org.rasulov.colorspicker.R
 import org.rasulov.colorspicker.model.colors.ColorsRepository
 import org.rasulov.colorspicker.model.entity.NamedColor
 import org.rasulov.core.navigator.Navigator
-import org.rasulov.core.uiactions.UiActions
 import org.rasulov.core.screens.BaseViewModel
+import org.rasulov.core.uiactions.UiActions
 
 
 class ChangeColorViewModel(
@@ -22,8 +22,7 @@ class ChangeColorViewModel(
 
     // input sources
     private val _availableColors = MutableLiveData<List<NamedColor>>()
-    private val _currentColorId =
-        savedStateHandle.getLiveData("currentColorId", screen.currentColorId)
+    private val _currentColorId = savedStateHandle.getLiveData("currentColorId", screen.currentColorId)
 
     // main destination (contains merged values from _availableColors & _currentColorId)
     private val _colorsList = MediatorLiveData<List<NamedColorListItem>>()
@@ -56,13 +55,7 @@ class ChangeColorViewModel(
         navigator.goBack()
     }
 
-    /**
-     * [MediatorLiveData] can listen other LiveData instances (even more than 1)
-     * and combine their values.
-     * Here we listen the list of available colors ([_availableColors] live-data) + current color id
-     * ([_currentColorId] live-data), then we use both of these values in order to create a list of
-     * [NamedColorListItem], it is a list to be displayed in RecyclerView.
-     */
+
     private fun mergeSources() {
         val colors = _availableColors.value ?: return
         val currentColorId = _currentColorId.value ?: return

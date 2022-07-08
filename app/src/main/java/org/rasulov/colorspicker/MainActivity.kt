@@ -2,12 +2,11 @@ package org.rasulov.colorspicker
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.activity.viewModels
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import org.rasulov.colorspicker.screens.current_color_fragment.CurrentColorFragment
+import org.rasulov.core.ActivityScopeViewModel
 import org.rasulov.core.navigator.FragmentNavigator
 import org.rasulov.core.navigator.IntermediateNavigator
-import org.rasulov.core.screens.FragmentsHolder
+import org.rasulov.core.FragmentsHolder
 import org.rasulov.core.uiactions.AndroidUiActions
 import org.rasulov.core.utils.viewModelCreator
 
