@@ -6,10 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import androidx.core.view.isVisible
 import androidx.lifecycle.SavedStateHandle
 import androidx.recyclerview.widget.GridLayoutManager
 import org.rasulov.colorspicker.R
 import org.rasulov.colorspicker.databinding.FragmentChangeColorBinding
+import org.rasulov.colorspicker.databinding.PartResultBinding
+import org.rasulov.colorspicker.screens.usualRenderResult
 import org.rasulov.core.screens.HasScreenTitle
 import org.rasulov.core.screens.BaseFragment
 import org.rasulov.core.screens.BaseScreen
@@ -30,7 +33,11 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
 
     override val viewModel by screenViewModel<ChangeColorViewModel>()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         val binding = FragmentChangeColorBinding.inflate(inflater, container, false)
 
         val adapter = ColorsAdapter(viewModel)
@@ -39,12 +46,25 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
         binding.saveButton.setOnClickListener { viewModel.onSavePressed() }
         binding.cancelButton.setOnClickListener { viewModel.onCancelPressed() }
 
-        viewModel.colorsList.observe(viewLifecycleOwner) {
-            adapter.items = it
+        viewModel.viewState.observe(viewLifecycleOwner) { resultViewState ->
+            with(binding) {
+                usualRenderResult(root, resultViewState) {
+                    adapter.items = it.colorsList
+                    cancelButton.isVisible = it.showCancelButton
+                    saveButton.isVisible = it.showSaveButton
+                    saveProgressBar.isVisible = it.showSaveProgressBar
+                }
+            }
+
         }
         viewModel.screenTitle.observe(viewLifecycleOwner) {
             // if screen title is changed -> need to notify activity about updates
             notifyScreenUpdates()
+        }
+
+        val binding2 = PartResultBinding.bind(binding.root)
+        binding2.btnTryAgain.setOnClickListener {
+            viewModel.tryAgain()
         }
 
         return binding.root
@@ -55,14 +75,17 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
 
     private fun setupLayoutManager(binding: FragmentChangeColorBinding, adapter: ColorsAdapter) {
         // waiting for list width
-        binding.colorsRecyclerView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+        binding.colorsRecyclerView.viewTreeObserver.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
+                //todo treeobserver
                 binding.colorsRecyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 val width = binding.colorsRecyclerView.width
                 val minItemWidth = resources.getDimensionPixelSize(R.dimen.item_width)
                 val columns = width / minItemWidth
                 binding.colorsRecyclerView.adapter = adapter
-                binding.colorsRecyclerView.layoutManager = GridLayoutManager(requireContext(), columns)
+                binding.colorsRecyclerView.layoutManager =
+                    GridLayoutManager(requireContext(), columns)
             }
         })
     }

@@ -1,5 +1,6 @@
 package org.rasulov.colorspicker.screens.current_color_fragment
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import org.rasulov.colorspicker.R
@@ -7,11 +8,17 @@ import org.rasulov.colorspicker.model.colors.ColorListener
 import org.rasulov.colorspicker.model.colors.ColorsRepository
 import org.rasulov.colorspicker.model.entity.NamedColor
 import org.rasulov.colorspicker.screens.change_color_fragment.ChangeColorFragment
+import org.rasulov.core.model.OnError
+import org.rasulov.core.model.OnPending
+import org.rasulov.core.model.OnSuccess
+import org.rasulov.core.model.takeSuccess
 import org.rasulov.core.navigator.Navigator
 import org.rasulov.core.screens.BaseViewModel
 import org.rasulov.core.uiactions.UiActions
 import org.rasulov.core.utils.LiveResult
 import org.rasulov.core.utils.MutableLiveResult
+import java.lang.Error
+import java.lang.RuntimeException
 
 class CurrentColorViewModel(
     private val navigator: Navigator,
@@ -19,11 +26,11 @@ class CurrentColorViewModel(
     private val colorsRepository: ColorsRepository,
 ) : BaseViewModel() {
 
-    private val _currentColor = MutableLiveResult<NamedColor>()
+    private val _currentColor = MutableLiveResult<NamedColor>(OnPending())
     val currentColor: LiveResult<NamedColor> = _currentColor
 
     private val colorListener: ColorListener = {
-        _currentColor.postValue(it)
+        _currentColor.postValue(OnSuccess(it))
     }
 
     init {
@@ -40,9 +47,13 @@ class CurrentColorViewModel(
 
 
     fun changeColor() {
-        val currentColor = currentColor.value ?: return
+        val currentColor = currentColor.value.takeSuccess() ?: return
         val screen = ChangeColorFragment.Screen(currentColor.id)
         navigator.launch(screen)
+    }
+
+    fun tryAgain() {
+
     }
 
     override fun onCleared() {
