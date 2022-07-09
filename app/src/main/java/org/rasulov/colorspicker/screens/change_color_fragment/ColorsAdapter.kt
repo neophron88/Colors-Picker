@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.rasulov.colorspicker.databinding.ItemColorBinding
 import org.rasulov.colorspicker.model.entity.NamedColor
+import org.rasulov.colorspicker.model.tasks.Task
 
 /**
  * Adapter for displaying the list of available colors
@@ -42,6 +43,7 @@ class ColorsAdapter(
             colorView.setBackgroundColor(namedColor.value)
             selectedIndicatorImageView.visibility = if (selected) View.VISIBLE else View.GONE
         }
+
     }
 
     override fun getItemCount(): Int = items.size

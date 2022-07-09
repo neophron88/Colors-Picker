@@ -1,14 +1,10 @@
 package org.rasulov.colorspicker.screens.current_color_fragment
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import org.rasulov.colorspicker.R
 import org.rasulov.colorspicker.model.colors.ColorListener
 import org.rasulov.colorspicker.model.colors.ColorsRepository
 import org.rasulov.colorspicker.model.entity.NamedColor
 import org.rasulov.colorspicker.screens.change_color_fragment.ChangeColorFragment
-import org.rasulov.core.model.OnError
 import org.rasulov.core.model.OnPending
 import org.rasulov.core.model.OnSuccess
 import org.rasulov.core.model.takeSuccess
@@ -17,8 +13,6 @@ import org.rasulov.core.screens.BaseViewModel
 import org.rasulov.core.uiactions.UiActions
 import org.rasulov.core.utils.LiveResult
 import org.rasulov.core.utils.MutableLiveResult
-import java.lang.Error
-import java.lang.RuntimeException
 
 class CurrentColorViewModel(
     private val navigator: Navigator,
@@ -35,7 +29,9 @@ class CurrentColorViewModel(
 
     init {
         colorsRepository.addListener(colorListener)
+        load()
     }
+
 
     override fun onResult(result: Any) {
         super.onResult(result)
@@ -53,8 +49,14 @@ class CurrentColorViewModel(
     }
 
     fun tryAgain() {
-
+        load()
     }
+
+
+    private fun load() {
+        colorsRepository.getCurrentColor().into(_currentColor)
+    }
+
 
     override fun onCleared() {
         super.onCleared()

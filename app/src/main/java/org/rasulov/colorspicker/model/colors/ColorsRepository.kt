@@ -2,38 +2,23 @@ package org.rasulov.colorspicker.model.colors
 
 import org.rasulov.core.model.Repository
 import org.rasulov.colorspicker.model.entity.NamedColor
+import org.rasulov.colorspicker.model.tasks.Task
 
 
 typealias ColorListener = (NamedColor) -> Unit
 
-/**
- * Repository interface example.
- *
- * Provides access to the available colors and current selected color.
- */
 interface ColorsRepository : Repository {
 
-    var currentColor: NamedColor
+    fun getAvailableColors(): Task<List<NamedColor>>
 
-    /**
-     * Get the list of all available colors that may be chosen by the user.
-     */
-    fun getAvailableColors(): List<NamedColor>
+    fun getById(id: Long): Task<NamedColor>
 
-    /**
-     * Get the color content by its ID
-     */
-    fun getById(id: Long): NamedColor
+    fun getCurrentColor(): Task<NamedColor>
 
-    /**
-     * Listen for the current color changes.
-     * The listener is triggered immediately with the current value when calling this method.
-     */
+    fun setCurrentColor(color: NamedColor): Task<Unit>
+
     fun addListener(listener: ColorListener)
 
-    /**
-     * Stop listening for the current color changes
-     */
     fun removeListener(listener: ColorListener)
 
 }

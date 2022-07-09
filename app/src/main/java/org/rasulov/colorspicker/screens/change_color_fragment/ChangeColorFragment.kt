@@ -17,6 +17,8 @@ import org.rasulov.core.screens.HasScreenTitle
 import org.rasulov.core.screens.BaseFragment
 import org.rasulov.core.screens.BaseScreen
 import org.rasulov.core.screens.screenViewModel
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * Screen for changing color.
@@ -49,14 +51,16 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
         viewModel.viewState.observe(viewLifecycleOwner) { resultViewState ->
             with(binding) {
                 usualRenderResult(root, resultViewState) {
+                    Log.d("it0088", "usualRenderResult:${it.colorsList} ")
                     adapter.items = it.colorsList
                     cancelButton.isVisible = it.showCancelButton
                     saveButton.isVisible = it.showSaveButton
                     saveProgressBar.isVisible = it.showSaveProgressBar
+
                 }
             }
-
         }
+
         viewModel.screenTitle.observe(viewLifecycleOwner) {
             // if screen title is changed -> need to notify activity about updates
             notifyScreenUpdates()
@@ -75,14 +79,17 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
 
     private fun setupLayoutManager(binding: FragmentChangeColorBinding, adapter: ColorsAdapter) {
         // waiting for list width
-        binding.colorsRecyclerView.viewTreeObserver.addOnGlobalLayoutListener(object :
+        binding.root.viewTreeObserver.addOnGlobalLayoutListener(object :
             ViewTreeObserver.OnGlobalLayoutListener {
+
             override fun onGlobalLayout() {
+                binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 //todo treeobserver
                 binding.colorsRecyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 val width = binding.colorsRecyclerView.width
                 val minItemWidth = resources.getDimensionPixelSize(R.dimen.item_width)
                 val columns = width / minItemWidth
+                Log.d("it0088", "onGlobalLayout: $width")
                 binding.colorsRecyclerView.adapter = adapter
                 binding.colorsRecyclerView.layoutManager =
                     GridLayoutManager(requireContext(), columns)
