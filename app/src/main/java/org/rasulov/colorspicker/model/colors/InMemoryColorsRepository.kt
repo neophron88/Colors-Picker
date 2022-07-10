@@ -32,7 +32,6 @@ class InMemoryColorsRepository(
 
 
     override fun getById(id: Long): Task<NamedColor> = task.async {
-        Thread.sleep(1500)
         return@async AVAILABLE_COLORS.first { it.id == id }
     }
 
@@ -45,9 +44,13 @@ class InMemoryColorsRepository(
         if (currentColor != color) {
             Thread.sleep(1500)
             currentColor = color
-
+            notifyListeners()
         }
         return@async
+    }
+
+    private fun notifyListeners() {
+        listeners.forEach { it(currentColor) }
     }
 
     companion object {

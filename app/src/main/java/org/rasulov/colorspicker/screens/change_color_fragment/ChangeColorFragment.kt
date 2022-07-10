@@ -86,7 +86,7 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
                 binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 //todo treeobserver
                 binding.colorsRecyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                val width = binding.colorsRecyclerView.width
+                val width = binding.root.width
                 val minItemWidth = resources.getDimensionPixelSize(R.dimen.item_width)
                 val columns = width / minItemWidth
                 Log.d("it0088", "onGlobalLayout: $width")
