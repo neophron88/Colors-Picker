@@ -2,7 +2,7 @@ package org.rasulov.colorspicker.model.colors
 
 import org.rasulov.core.model.Repository
 import org.rasulov.colorspicker.model.entity.NamedColor
-import org.rasulov.colorspicker.model.tasks.Task
+import org.rasulov.core.model.tasks.Task
 
 
 typealias ColorListener = (NamedColor) -> Unit

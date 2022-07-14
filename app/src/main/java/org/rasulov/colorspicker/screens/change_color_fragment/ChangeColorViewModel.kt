@@ -8,27 +8,28 @@ import androidx.lifecycle.Transformations
 import org.rasulov.colorspicker.R
 import org.rasulov.colorspicker.model.colors.ColorsRepository
 import org.rasulov.colorspicker.model.entity.NamedColor
-import org.rasulov.colorspicker.model.tasks.TaskFactory
 import org.rasulov.core.model.FinalResult
 import org.rasulov.core.model.OnError
 import org.rasulov.core.model.OnSuccess
+import org.rasulov.core.model.tasks.dispatchers.Dispatcher
+import org.rasulov.core.model.tasks.factories.TaskFactory
 import org.rasulov.core.navigator.Navigator
 import org.rasulov.core.screens.BaseViewModel
 import org.rasulov.core.uiactions.UiActions
 import org.rasulov.core.utils.LiveResult
 import org.rasulov.core.utils.MediatorLiveResult
 import org.rasulov.core.utils.MutableLiveResult
-import java.lang.IllegalArgumentException
 
 
 class ChangeColorViewModel(
     screen: ChangeColorFragment.Screen,
     savedStateHandle: SavedStateHandle,
+    dispatcher: Dispatcher,
     private val navigator: Navigator,
     private val uiActions: UiActions,
     private val colorsRepository: ColorsRepository,
     private val taskFactory: TaskFactory
-) : BaseViewModel(), ColorsAdapter.Listener {
+) : BaseViewModel(dispatcher), ColorsAdapter.Listener {
 
     // input sources
     private val _availableColors = MutableLiveResult<List<NamedColor>>()
@@ -36,11 +37,9 @@ class ChangeColorViewModel(
         savedStateHandle.getLiveData("currentColorId", screen.currentColorId)
     private val _saveInProgress = MutableLiveData(false)
 
-    // main destination (contains merged values from _availableColors & _currentColorId)
     private val _viewState = MediatorLiveResult<ViewState>()
     val viewState: LiveResult<ViewState> = _viewState
 
-    // side destination, also the same result can be achieved by using Transformations.map() function.
 
     val screenTitle: LiveData<String> =
         Transformations.map(_viewState) { result ->
@@ -78,11 +77,11 @@ class ChangeColorViewModel(
 
     private fun onSaved(result: FinalResult<NamedColor>) {
         _saveInProgress.value = false
+        Log.d("it0088", "onSaved: $result")
         when (result) {
             is OnSuccess -> navigator.goBack(result.data)
             is OnError -> uiActions.toast(uiActions.getString(R.string.error_please_try_again))
         }
-
     }
 
 

@@ -5,5 +5,5 @@ import org.rasulov.core.model.Repository
 
 abstract class BaseApplication : Application() {
 
-    abstract val repositories: List<Repository>
+    abstract val singletonScopeDependencies: List<Any>
 }

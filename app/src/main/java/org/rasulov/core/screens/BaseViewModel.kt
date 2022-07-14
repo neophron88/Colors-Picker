@@ -1,8 +1,10 @@
 package org.rasulov.core.screens
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
-import org.rasulov.colorspicker.model.tasks.Callback
-import org.rasulov.colorspicker.model.tasks.Task
+import org.rasulov.core.model.tasks.Callback
+import org.rasulov.core.model.tasks.Task
+import org.rasulov.core.model.tasks.dispatchers.Dispatcher
 import org.rasulov.core.model.OnPending
 import org.rasulov.core.utils.MutableLiveResult
 
@@ -10,16 +12,19 @@ import org.rasulov.core.utils.MutableLiveResult
 /**
  * Base class for all view-models.
  */
-abstract class BaseViewModel : ViewModel() {
+abstract class BaseViewModel(
+    private val dispatcher: Dispatcher
+) : ViewModel() {
 
     private val tasks = mutableSetOf<Task<*>>()
 
     open fun onResult(result: Any) {
     }
 
+
     fun <T> Task<T>.safeEnqueue(listener: Callback<T>? = null) {
         tasks.add(this)
-        this.enqueue {
+        this.enqueue(dispatcher) {
             tasks.remove(this)
             listener?.invoke(it)
         }
@@ -32,9 +37,19 @@ abstract class BaseViewModel : ViewModel() {
         }
     }
 
+    fun onBackPressed() {
+        clear()
+    }
+
     override fun onCleared() {
         super.onCleared()
+        clear()
+    }
+
+    private fun clear() {
         tasks.forEach { it.cancel() }
         tasks.clear()
     }
+
+
 }

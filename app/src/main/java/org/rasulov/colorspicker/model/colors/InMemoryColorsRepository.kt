@@ -2,14 +2,16 @@ package org.rasulov.colorspicker.model.colors
 
 import android.graphics.Color
 import org.rasulov.colorspicker.model.entity.NamedColor
-import org.rasulov.colorspicker.model.tasks.Task
-import org.rasulov.colorspicker.model.tasks.TaskFactory
+import org.rasulov.core.model.tasks.Task
+import org.rasulov.core.model.tasks.ThreadUtils
+import org.rasulov.core.model.tasks.factories.TaskFactory
 
 /**
  * Simple in-memory implementation of [ColorsRepository]
  */
 class InMemoryColorsRepository(
-    private val task: TaskFactory
+    private val task: TaskFactory,
+    private val utils: ThreadUtils
 ) : ColorsRepository {
 
     private var currentColor = AVAILABLE_COLORS[0]
@@ -26,7 +28,7 @@ class InMemoryColorsRepository(
 
 
     override fun getAvailableColors(): Task<List<NamedColor>> = task.async {
-        Thread.sleep(1500)
+        utils.sleep(1)
         return@async AVAILABLE_COLORS
     }
 
@@ -36,13 +38,13 @@ class InMemoryColorsRepository(
     }
 
     override fun getCurrentColor(): Task<NamedColor> = task.async {
-        Thread.sleep(1500)
+        utils.sleep(1)
         return@async currentColor
     }
 
     override fun setCurrentColor(color: NamedColor): Task<Unit> = task.async {
         if (currentColor != color) {
-            Thread.sleep(1500)
+            utils.sleep(1)
             currentColor = color
             notifyListeners()
         }

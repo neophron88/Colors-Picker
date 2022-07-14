@@ -20,13 +20,6 @@ import org.rasulov.core.screens.screenViewModel
 import kotlin.math.max
 import kotlin.math.min
 
-/**
- * Screen for changing color.
- * 1) Displays the list of available colors
- * 2) Allows choosing the desired color
- * 3) Chosen color is saved only after pressing "Save" button
- * 4) The current choice is saved via [SavedStateHandle] (see [ChangeColorViewModel])
- */
 class ChangeColorFragment : BaseFragment(), HasScreenTitle {
 
     class Screen(
@@ -35,6 +28,10 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
 
     override val viewModel by screenViewModel<ChangeColorViewModel>()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.d("it0088", "onCreate: f")
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -51,7 +48,6 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
         viewModel.viewState.observe(viewLifecycleOwner) { resultViewState ->
             with(binding) {
                 usualRenderResult(root, resultViewState) {
-                    Log.d("it0088", "usualRenderResult:${it.colorsList} ")
                     adapter.items = it.colorsList
                     cancelButton.isVisible = it.showCancelButton
                     saveButton.isVisible = it.showSaveButton
@@ -62,7 +58,6 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
         }
 
         viewModel.screenTitle.observe(viewLifecycleOwner) {
-            // if screen title is changed -> need to notify activity about updates
             notifyScreenUpdates()
         }
 
@@ -70,15 +65,36 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
         binding2.btnTryAgain.setOnClickListener {
             viewModel.tryAgain()
         }
-
+        Log.d("it0088", "onCreateView: f")
         return binding.root
     }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("it0088", "onPause: f")
+    }
+    override fun onStop() {
+        super.onStop()
+        Log.d("it0088", "onStop: f")
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d("it0088", "onDestroyView: f")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("it0088", "onDestroy: f")
+    }
+
+
 
     override fun getScreenTitle(): String? = viewModel.screenTitle.value
 
 
+
     private fun setupLayoutManager(binding: FragmentChangeColorBinding, adapter: ColorsAdapter) {
-        // waiting for list width
+
         binding.root.viewTreeObserver.addOnGlobalLayoutListener(object :
             ViewTreeObserver.OnGlobalLayoutListener {
 
@@ -89,7 +105,6 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
                 val width = binding.root.width
                 val minItemWidth = resources.getDimensionPixelSize(R.dimen.item_width)
                 val columns = width / minItemWidth
-                Log.d("it0088", "onGlobalLayout: $width")
                 binding.colorsRecyclerView.adapter = adapter
                 binding.colorsRecyclerView.layoutManager =
                     GridLayoutManager(requireContext(), columns)

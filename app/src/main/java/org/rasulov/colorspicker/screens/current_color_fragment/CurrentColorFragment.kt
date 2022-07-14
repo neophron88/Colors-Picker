@@ -23,16 +23,19 @@ class CurrentColorFragment : BaseFragment() {
 
     override val viewModel by screenViewModel<CurrentColorViewModel>()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.d("it0088", "onCreate: fragment")
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         val binding = FragmentCurrentColorBinding.inflate(inflater, container, false)
-
+        Log.d("it0088", "onCreateView: fragment")
         viewModel.currentColor.observe(viewLifecycleOwner) { result ->
 
-            Log.d("it0088", "observe: $result")
             usualRenderResult(binding.root, result) {
                 binding.colorView.setBackgroundColor(it.value)
             }
@@ -49,5 +52,15 @@ class CurrentColorFragment : BaseFragment() {
 
         return binding.root
 
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("it0088", "onPause: fragment")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("it0088", "onDestroy: fragment")
     }
 }

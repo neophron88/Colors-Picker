@@ -11,11 +11,9 @@ class IntermediateNavigator : Navigator {
         it.launch(screen)
     }
 
-
     override fun goBack(result: Any?) = target {
         it.goBack(result)
     }
-
 
     fun setTarget(navigator: Navigator?) {
         target.resource = navigator

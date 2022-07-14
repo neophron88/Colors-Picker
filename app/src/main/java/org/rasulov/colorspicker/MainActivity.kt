@@ -1,7 +1,9 @@
 package org.rasulov.colorspicker
 
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import org.rasulov.colorspicker.screens.current_color_fragment.CurrentColorFragment
 import org.rasulov.core.ActivityScopeViewModel
 import org.rasulov.core.navigator.FragmentNavigator
@@ -9,11 +11,8 @@ import org.rasulov.core.navigator.IntermediateNavigator
 import org.rasulov.core.FragmentsHolder
 import org.rasulov.core.uiactions.AndroidUiActions
 import org.rasulov.core.utils.viewModelCreator
+import java.util.prefs.Preferences
 
-/**
- * This application is a single-activity app. MainActivity is a container
- * for all screens.
- */
 class MainActivity : AppCompatActivity(), FragmentsHolder {
 
 
@@ -24,7 +23,6 @@ class MainActivity : AppCompatActivity(), FragmentsHolder {
             IntermediateNavigator()
         )
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +39,8 @@ class MainActivity : AppCompatActivity(), FragmentsHolder {
     override fun onDestroy() {
         super.onDestroy()
         navigator.onDestroy()
+        Log.d("it0088", "onDestroy:")
+
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -50,16 +50,16 @@ class MainActivity : AppCompatActivity(), FragmentsHolder {
 
     override fun onResume() {
         super.onResume()
-        // execute navigation actions only when activity is active
         activityViewModel.navigator.setTarget(navigator)
 
     }
 
     override fun onPause() {
         super.onPause()
-        // postpone navigation actions if activity is not active
         activityViewModel.navigator.setTarget(null)
+        Log.d("it0088", "onPause: ")
     }
+
 
     override fun notifyScreenUpdates() {
         navigator.notifyScreenUpdates()
@@ -69,4 +69,9 @@ class MainActivity : AppCompatActivity(), FragmentsHolder {
         return activityViewModel
     }
 
+    override fun onBackPressed() {
+        navigator.onBackPressed()
+        super.onBackPressed()
+
+    }
 }

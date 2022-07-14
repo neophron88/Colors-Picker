@@ -58,9 +58,8 @@ class FragmentNavigator(
 
 
     private fun launchFragment(screen: BaseScreen, addToBackStack: Boolean = true) {
-        // as screen classes are inside fragments -> we can create fragment directly from screen
+
         val fragment = screen.javaClass.enclosingClass.newInstance() as Fragment
-        // set screen object as fragment's argument
         fragment.arguments = bundleOf(ARG_SCREEN to screen)
 
         val transaction = activity.supportFragmentManager.beginTransaction()
@@ -111,6 +110,13 @@ class FragmentNavigator(
             activity.supportActionBar?.title = activity.getString(R.string.app_name)
         }
 
+    }
+
+    fun onBackPressed() {
+        val f = activity.supportFragmentManager.findFragmentById(R.id.fragments_container)
+        if (f is BaseFragment) {
+            f.viewModel.onBackPressed()
+        }
     }
 
 
