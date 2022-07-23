@@ -2,20 +2,19 @@ package org.rasulov.colorspicker.model.colors
 
 import org.rasulov.core.model.Repository
 import org.rasulov.colorspicker.model.entity.NamedColor
-import org.rasulov.core.model.tasks.Task
 
 
 typealias ColorListener = (NamedColor) -> Unit
 
 interface ColorsRepository : Repository {
 
-    fun getAvailableColors(): Task<List<NamedColor>>
+    suspend fun getAvailableColors(): List<NamedColor>
 
-    fun getById(id: Long): Task<NamedColor>
+    suspend fun getById(id: Long): NamedColor
 
-    fun getCurrentColor(): Task<NamedColor>
+    suspend fun getCurrentColor(): NamedColor
 
-    fun setCurrentColor(color: NamedColor): Task<Unit>
+    suspend fun setCurrentColor(color: NamedColor)
 
     fun addListener(listener: ColorListener)
 

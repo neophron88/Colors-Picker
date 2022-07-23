@@ -1,18 +1,12 @@
 package org.rasulov.colorspicker.model.colors
 
 import android.graphics.Color
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import org.rasulov.colorspicker.model.entity.NamedColor
-import org.rasulov.core.model.tasks.Task
-import org.rasulov.core.model.tasks.ThreadUtils
-import org.rasulov.core.model.tasks.factories.TaskFactory
 
-/**
- * Simple in-memory implementation of [ColorsRepository]
- */
-class InMemoryColorsRepository(
-    private val task: TaskFactory,
-    private val utils: ThreadUtils
-) : ColorsRepository {
+class InMemoryColorsRepository : ColorsRepository {
 
     private var currentColor = AVAILABLE_COLORS[0]
 
@@ -27,28 +21,35 @@ class InMemoryColorsRepository(
     }
 
 
-    override fun getAvailableColors(): Task<List<NamedColor>> = task.async {
-        utils.sleep(1)
-        return@async AVAILABLE_COLORS
-    }
-
-
-    override fun getById(id: Long): Task<NamedColor> = task.async {
-        return@async AVAILABLE_COLORS.first { it.id == id }
-    }
-
-    override fun getCurrentColor(): Task<NamedColor> = task.async {
-        utils.sleep(1)
-        return@async currentColor
-    }
-
-    override fun setCurrentColor(color: NamedColor): Task<Unit> = task.async {
-        if (currentColor != color) {
-            utils.sleep(1)
-            currentColor = color
-            notifyListeners()
+    override suspend fun getAvailableColors(): List<NamedColor> {
+        return withContext(Dispatchers.IO) {
+            delay(1500)
+            AVAILABLE_COLORS
         }
-        return@async
+    }
+
+
+    override suspend fun getById(id: Long): NamedColor {
+        return withContext(Dispatchers.IO) {
+            AVAILABLE_COLORS.first { it.id == id }
+        }
+    }
+
+    override suspend fun getCurrentColor(): NamedColor {
+        return withContext(Dispatchers.IO) {
+            delay(1500)
+            currentColor
+        }
+    }
+
+    override suspend fun setCurrentColor(color: NamedColor) {
+        return withContext(Dispatchers.IO) {
+            if (currentColor != color) {
+                delay(1500)
+                currentColor = color
+                notifyListeners()
+            }
+        }
     }
 
     private fun notifyListeners() {

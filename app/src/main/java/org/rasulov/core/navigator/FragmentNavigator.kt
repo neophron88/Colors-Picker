@@ -118,6 +118,4 @@ class FragmentNavigator(
             f.viewModel.onBackPressed()
         }
     }
-
-
 }

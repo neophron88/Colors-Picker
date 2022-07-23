@@ -1,11 +1,9 @@
 package org.rasulov.colorspicker.screens
 
-import android.util.Log
 import android.view.ViewGroup
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import org.rasulov.colorspicker.databinding.PartResultBinding
-import org.rasulov.core.model.OnSuccess
 import org.rasulov.core.model.Result
 import org.rasulov.core.screens.BaseFragment
 

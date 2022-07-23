@@ -5,7 +5,6 @@ import org.rasulov.colorspicker.R
 import org.rasulov.colorspicker.model.colors.ColorListener
 import org.rasulov.colorspicker.model.colors.ColorsRepository
 import org.rasulov.colorspicker.model.entity.NamedColor
-import org.rasulov.core.model.tasks.dispatchers.Dispatcher
 import org.rasulov.colorspicker.screens.change_color_fragment.ChangeColorFragment
 import org.rasulov.core.model.OnPending
 import org.rasulov.core.model.OnSuccess
@@ -20,8 +19,7 @@ class CurrentColorViewModel(
     private val navigator: Navigator,
     private val uiActions: UiActions,
     private val colorsRepository: ColorsRepository,
-    dispatcher: Dispatcher
-) : BaseViewModel(dispatcher) {
+) : BaseViewModel() {
 
     private val _currentColor = MutableLiveResult<NamedColor>(OnPending())
     val currentColor: LiveResult<NamedColor> = _currentColor
@@ -57,7 +55,7 @@ class CurrentColorViewModel(
 
 
     private fun load() {
-        colorsRepository.getCurrentColor().into(_currentColor)
+        into(_currentColor) { colorsRepository.getCurrentColor() }
     }
 
 

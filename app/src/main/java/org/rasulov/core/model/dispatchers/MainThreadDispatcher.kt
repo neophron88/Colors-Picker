@@ -1,4 +1,4 @@
-package org.rasulov.core.model.tasks.dispatchers
+package org.rasulov.core.model.dispatchers
 
 import android.os.Handler
 import android.os.Looper

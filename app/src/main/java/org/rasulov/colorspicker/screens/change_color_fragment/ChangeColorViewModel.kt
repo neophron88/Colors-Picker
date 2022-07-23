@@ -1,18 +1,12 @@
 package org.rasulov.colorspicker.screens.change_color_fragment
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 import org.rasulov.colorspicker.R
 import org.rasulov.colorspicker.model.colors.ColorsRepository
 import org.rasulov.colorspicker.model.entity.NamedColor
-import org.rasulov.core.model.FinalResult
-import org.rasulov.core.model.OnError
 import org.rasulov.core.model.OnSuccess
-import org.rasulov.core.model.tasks.dispatchers.Dispatcher
-import org.rasulov.core.model.tasks.factories.TaskFactory
 import org.rasulov.core.navigator.Navigator
 import org.rasulov.core.screens.BaseViewModel
 import org.rasulov.core.uiactions.UiActions
@@ -24,12 +18,10 @@ import org.rasulov.core.utils.MutableLiveResult
 class ChangeColorViewModel(
     screen: ChangeColorFragment.Screen,
     savedStateHandle: SavedStateHandle,
-    dispatcher: Dispatcher,
     private val navigator: Navigator,
     private val uiActions: UiActions,
     private val colorsRepository: ColorsRepository,
-    private val taskFactory: TaskFactory
-) : BaseViewModel(dispatcher), ColorsAdapter.Listener {
+) : BaseViewModel(), ColorsAdapter.Listener {
 
     // input sources
     private val _availableColors = MutableLiveResult<List<NamedColor>>()
@@ -43,10 +35,12 @@ class ChangeColorViewModel(
 
     val screenTitle: LiveData<String> =
         Transformations.map(_viewState) { result ->
-            if (result is OnSuccess) {
+            val s = if (result is OnSuccess) {
                 val name = result.data.colorsList.first { item -> item.selected }.namedColor.name
                 uiActions.getString(R.string.change_color_screen_title, name)
             } else uiActions.getString(R.string.change_color)
+            s
+
         }
 
     init {
@@ -61,29 +55,21 @@ class ChangeColorViewModel(
         _currentColorId.value = namedColor.id
     }
 
-    fun onSavePressed() {
-        _saveInProgress.value = true
-
-        taskFactory.async {
+    fun onSavePressed() = viewModelScope.launch {
+        try {
+            _saveInProgress.value = true
             val currentColorId = _currentColorId.value
                 ?: throw IllegalArgumentException("Current colorID always needs a value")
-            val currentColor = colorsRepository.getById(currentColorId).await()
-            colorsRepository.setCurrentColor(currentColor).await()
-            return@async currentColor
-        }.safeEnqueue(::onSaved)
-
-
-    }
-
-    private fun onSaved(result: FinalResult<NamedColor>) {
-        _saveInProgress.value = false
-        Log.d("it0088", "onSaved: $result")
-        when (result) {
-            is OnSuccess -> navigator.goBack(result.data)
-            is OnError -> uiActions.toast(uiActions.getString(R.string.error_please_try_again))
+            val currentColor = colorsRepository.getById(currentColorId)
+            colorsRepository.setCurrentColor(currentColor)
+            navigator.goBack(currentColor)
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            uiActions.toast(uiActions.getString(R.string.error_please_try_again))
+        } finally {
+            _saveInProgress.value = false
         }
     }
-
 
     fun onCancelPressed() {
         navigator.goBack()
@@ -113,7 +99,7 @@ class ChangeColorViewModel(
     }
 
     private fun load() {
-        colorsRepository.getAvailableColors().into(_availableColors)
+        into(_availableColors) { colorsRepository.getAvailableColors() }
     }
 
 

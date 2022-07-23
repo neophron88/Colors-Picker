@@ -1,22 +1,21 @@
 package org.rasulov.colorspicker
 
-import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import org.rasulov.colorspicker.screens.current_color_fragment.CurrentColorFragment
 import org.rasulov.core.ActivityScopeViewModel
+import org.rasulov.core.FragmentsHolder
 import org.rasulov.core.navigator.FragmentNavigator
 import org.rasulov.core.navigator.IntermediateNavigator
-import org.rasulov.core.FragmentsHolder
 import org.rasulov.core.uiactions.AndroidUiActions
 import org.rasulov.core.utils.viewModelCreator
-import java.util.prefs.Preferences
 
 class MainActivity : AppCompatActivity(), FragmentsHolder {
 
 
     private lateinit var navigator: FragmentNavigator
+
     private val activityViewModel by viewModelCreator<ActivityScopeViewModel> {
         ActivityScopeViewModel(
             AndroidUiActions(applicationContext),
@@ -72,6 +71,5 @@ class MainActivity : AppCompatActivity(), FragmentsHolder {
     override fun onBackPressed() {
         navigator.onBackPressed()
         super.onBackPressed()
-
     }
 }
