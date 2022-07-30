@@ -1,6 +1,9 @@
 package org.rasulov.colorspicker.screens.current_color_fragment
 
 import android.util.Log
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import org.rasulov.colorspicker.R
 import org.rasulov.colorspicker.model.colors.ColorListener
 import org.rasulov.colorspicker.model.colors.ColorsRepository
@@ -24,12 +27,14 @@ class CurrentColorViewModel(
     private val _currentColor = MutableLiveResult<NamedColor>(OnPending())
     val currentColor: LiveResult<NamedColor> = _currentColor
 
-    private val colorListener: ColorListener = {
-        _currentColor.postValue(OnSuccess(it))
-    }
 
     init {
-        colorsRepository.addListener(colorListener)
+        viewModelScope.launch {
+            colorsRepository.listenCurrentColor().collect {
+                _currentColor.value = OnSuccess(it)
+            }
+            Log.d("it0088", "listening canceled ")
+        }
         load()
     }
 
@@ -55,13 +60,14 @@ class CurrentColorViewModel(
 
 
     private fun load() {
-        into(_currentColor) { colorsRepository.getCurrentColor() }
+        into(_currentColor) {
+            colorsRepository.getCurrentColor()
+        }
     }
 
 
     override fun onCleared() {
         super.onCleared()
-        colorsRepository.removeListener(colorListener)
         Log.d("it0088", "onCleared: ")
     }
 

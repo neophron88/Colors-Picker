@@ -19,5 +19,6 @@
     <string name="error_please_try_again">Error! Please Try Again</string>
     <string name="try_again">Try Again</string>
     <string name="change_color">Change Color</string>
+    <string name="percent">%1$d%%</string>
 
 </resources>

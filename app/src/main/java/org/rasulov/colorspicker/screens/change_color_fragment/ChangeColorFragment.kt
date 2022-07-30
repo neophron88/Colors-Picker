@@ -7,8 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
+import kotlinx.coroutines.launch
 import org.rasulov.colorspicker.R
 import org.rasulov.colorspicker.databinding.FragmentChangeColorBinding
 import org.rasulov.colorspicker.databinding.PartResultBinding
@@ -32,6 +36,7 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
         super.onCreate(savedInstanceState)
         Log.d("it0088", "onCreate: f")
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -45,14 +50,21 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
         binding.saveButton.setOnClickListener { viewModel.onSavePressed() }
         binding.cancelButton.setOnClickListener { viewModel.onCancelPressed() }
 
-        viewModel.viewState.observe(viewLifecycleOwner) { resultViewState ->
-            with(binding) {
-                usualRenderResult(root, resultViewState) {
-                    adapter.items = it.colorsList
-                    cancelButton.isVisible = it.showCancelButton
-                    saveButton.isVisible = it.showSaveButton
-                    saveProgressBar.isVisible = it.showSaveProgressBar
 
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.viewState.collect { resultViewState ->
+                    with(binding) {
+                        usualRenderResult(root, resultViewState) {
+                            adapter.items = it.colorsList
+                            cancelButton.isVisible = it.showCancelButton
+                            saveButton.isVisible = it.showSaveButton
+                            saveProgressBar.isVisible = it.showSaveProgressBar
+                            saveProgressBar.progress = it.saveProgressPercent
+                            tvPercent.isVisible = it.showSaveProgressBar
+                            tvPercent.text = it.saveProgressPercentMessage
+                        }
+                    }
                 }
             }
         }
@@ -60,6 +72,7 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
         viewModel.screenTitle.observe(viewLifecycleOwner) {
             notifyScreenUpdates()
         }
+
 
         val binding2 = PartResultBinding.bind(binding.root)
         binding2.btnTryAgain.setOnClickListener {
@@ -73,10 +86,12 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
         super.onPause()
         Log.d("it0088", "onPause: f")
     }
+
     override fun onStop() {
         super.onStop()
         Log.d("it0088", "onStop: f")
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         Log.d("it0088", "onDestroyView: f")
@@ -88,9 +103,7 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
     }
 
 
-
     override fun getScreenTitle(): String? = viewModel.screenTitle.value
-
 
 
     private fun setupLayoutManager(binding: FragmentChangeColorBinding, adapter: ColorsAdapter) {

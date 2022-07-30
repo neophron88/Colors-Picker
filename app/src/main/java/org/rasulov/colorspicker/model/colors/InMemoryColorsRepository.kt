@@ -1,8 +1,13 @@
 package org.rasulov.colorspicker.model.colors
 
 import android.graphics.Color
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import org.rasulov.colorspicker.model.entity.NamedColor
 
@@ -12,12 +17,19 @@ class InMemoryColorsRepository : ColorsRepository {
 
     private val listeners = mutableSetOf<ColorListener>()
 
-    override fun addListener(listener: ColorListener) {
-        listeners += listener
-    }
+    override fun listenCurrentColor(): Flow<NamedColor> {
+        return callbackFlow {
+            val listener: ColorListener = {
+                trySend(it)
+            }
+            listeners.add(listener)
 
-    override fun removeListener(listener: ColorListener) {
-        listeners -= listener
+            awaitClose {
+                listeners.remove(listener)
+            }
+        }.buffer(Channel.CONFLATED)
+
+
     }
 
 
@@ -42,14 +54,19 @@ class InMemoryColorsRepository : ColorsRepository {
         }
     }
 
-    override suspend fun setCurrentColor(color: NamedColor) {
-        return withContext(Dispatchers.IO) {
+    override fun setCurrentColor(color: NamedColor): Flow<Int> {
+        return flow {
             if (currentColor != color) {
-                delay(1500)
+                var progress = 0
+                while (progress < 100) {
+                    progress += 2
+                    delay(50)
+                    emit(progress)
+                }
                 currentColor = color
                 notifyListeners()
-            }
-        }
+            } else emit(100)
+        }.buffer(Channel.CONFLATED)
     }
 
     private fun notifyListeners() {

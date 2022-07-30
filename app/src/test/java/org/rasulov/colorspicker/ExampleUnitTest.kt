@@ -1,5 +1,7 @@
 package org.rasulov.colorspicker
 
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -11,7 +13,31 @@ import org.junit.Assert.*
  */
 class ExampleUnitTest {
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun testFlows() {
+
+        val list = listOf(1, 2, 3, 4, 5, 6, 7, 8)
+            .filter {
+                println("$it filter")
+                it % 2 == 0
+            }
+            .map {
+                println("$it map")
+                it * 10
+            }.asFlow()
+        println("-----------------------------------------------------------")
+        runBlocking {
+            val flow: Flow<Int> = flowOf(1, 2, 4, 5, 6, 7, 8, 9)
+            list.filter {
+                println("$it filter")
+                it % 2 == 0
+            }
+                .map {
+                    println("$it map")
+                    it * 10
+                }
+                .collect {
+                    println(it)
+                }
+        }
     }
 }

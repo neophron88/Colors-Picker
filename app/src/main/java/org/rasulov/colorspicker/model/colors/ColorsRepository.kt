@@ -1,5 +1,6 @@
 package org.rasulov.colorspicker.model.colors
 
+import kotlinx.coroutines.flow.Flow
 import org.rasulov.core.model.Repository
 import org.rasulov.colorspicker.model.entity.NamedColor
 
@@ -14,10 +15,8 @@ interface ColorsRepository : Repository {
 
     suspend fun getCurrentColor(): NamedColor
 
-    suspend fun setCurrentColor(color: NamedColor)
+    fun setCurrentColor(color: NamedColor): Flow<Int>
 
-    fun addListener(listener: ColorListener)
-
-    fun removeListener(listener: ColorListener)
+    fun listenCurrentColor(): Flow<NamedColor>
 
 }
