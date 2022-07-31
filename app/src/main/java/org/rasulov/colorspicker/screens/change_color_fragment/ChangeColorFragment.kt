@@ -53,6 +53,8 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+
                 viewModel.viewState.collect { resultViewState ->
                     with(binding) {
                         usualRenderResult(root, resultViewState) {

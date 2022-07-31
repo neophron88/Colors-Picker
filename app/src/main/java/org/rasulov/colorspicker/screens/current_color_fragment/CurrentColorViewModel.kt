@@ -1,6 +1,9 @@
 package org.rasulov.colorspicker.screens.current_color_fragment
 
 import android.util.Log
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -27,16 +30,30 @@ class CurrentColorViewModel(
     private val _currentColor = MutableLiveResult<NamedColor>(OnPending())
     val currentColor: LiveResult<NamedColor> = _currentColor
 
+    val sharedFlow = MutableSharedFlow<Int>(
+        5,
+        10,
+        BufferOverflow.SUSPEND
+    )
 
     init {
+
         viewModelScope.launch {
+//            repeat(100) {
+//                Log.d("itrt0088", "repeat $it")
+//                delay(10)
+//                sharedFlow.emit(it)
+//            }
+
             colorsRepository.listenCurrentColor().collect {
                 _currentColor.value = OnSuccess(it)
             }
-            Log.d("it0088", "listening canceled ")
         }
+
         load()
+
     }
+
 
 
     override fun onResult(result: Any) {

@@ -6,7 +6,6 @@ sealed class Result<T> {
         is OnSuccess -> OnSuccess(transfer(data))
         is OnError -> OnError(error)
     }
-
 }
 
 sealed class FinalResult<T> : Result<T>()

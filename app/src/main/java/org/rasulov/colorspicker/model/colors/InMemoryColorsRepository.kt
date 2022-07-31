@@ -15,22 +15,13 @@ class InMemoryColorsRepository : ColorsRepository {
 
     private var currentColor = AVAILABLE_COLORS[0]
 
-    private val listeners = mutableSetOf<ColorListener>()
+    private val currentColorFlow = MutableSharedFlow<NamedColor>(
+        0,
+        0,
+        BufferOverflow.SUSPEND
+    )
 
-    override fun listenCurrentColor(): Flow<NamedColor> {
-        return callbackFlow {
-            val listener: ColorListener = {
-                trySend(it)
-            }
-            listeners.add(listener)
-
-            awaitClose {
-                listeners.remove(listener)
-            }
-        }.buffer(Channel.CONFLATED)
-
-
-    }
+    override fun listenCurrentColor(): Flow<NamedColor> = currentColorFlow
 
 
     override suspend fun getAvailableColors(): List<NamedColor> {
@@ -64,14 +55,11 @@ class InMemoryColorsRepository : ColorsRepository {
                     emit(progress)
                 }
                 currentColor = color
-                notifyListeners()
+                currentColorFlow.emit(currentColor)
             } else emit(100)
         }.buffer(Channel.CONFLATED)
     }
 
-    private fun notifyListeners() {
-        listeners.forEach { it(currentColor) }
-    }
 
     companion object {
         private val AVAILABLE_COLORS = listOf(

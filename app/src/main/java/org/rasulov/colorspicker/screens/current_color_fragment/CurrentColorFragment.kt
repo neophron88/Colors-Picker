@@ -6,6 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.sample
+import kotlinx.coroutines.launch
 import org.rasulov.colorspicker.databinding.FragmentCurrentColorBinding
 import org.rasulov.colorspicker.databinding.PartResultBinding
 import org.rasulov.colorspicker.screens.usualRenderResult
@@ -27,6 +35,7 @@ class CurrentColorFragment : BaseFragment() {
         super.onCreate(savedInstanceState)
         Log.d("it0088", "onCreate: fragment")
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -49,6 +58,13 @@ class CurrentColorFragment : BaseFragment() {
                 viewModel.tryAgain()
             }
         }
+
+//        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+//            viewModel.sharedFlow.collect {
+//                delay(100)
+//                Log.d("itrt0088", "sharedFlow collect: $it")
+//            }
+//        }
 
         return binding.root
 

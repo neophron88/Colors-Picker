@@ -25,8 +25,7 @@ class ChangeColorViewModel(
     private val colorsRepository: ColorsRepository,
 ) : BaseViewModel(), ColorsAdapter.Listener {
 
-    val a = MutableSharedFlow<String>().buffer()
-    // input sources
+
     private val _availableColors = MutableStateFlow<Result<List<NamedColor>>>(OnPending())
     private val _currentColorId =
         savedStateHandle.mutableStateFlow("currentColorId", screen.currentColorId)
@@ -48,7 +47,7 @@ class ChangeColorViewModel(
                     uiActions.getString(R.string.change_color_screen_title, name)
                 } else uiActions.getString(R.string.change_color)
                 s
-            }.buffer()
+            }
             .asLiveData()
 
     init {
